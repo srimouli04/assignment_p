@@ -1,82 +1,75 @@
-# Data Ingestion Solution
+**Data Ingestion Solution**
 
-To design a scalable data ingestion system, I propose utilizing **Apache Kafka** as the messaging broker to collect and process ad impressions (JSON), clicks/conversions (CSV), and bid requests (Avro) data. Kafka's distributed architecture and scalability enable it to handle high data volumes generated in real-time and batch modes.
-
-**Data Ingestion:**
-
-- **Components**:
-  - Apache Kafka: A distributed messaging system for collecting and processing ad impressions (JSON), clicks/conversions (CSV), and bid requests (Avro) data.
-  - Kafka Producers: Applications responsible for publishing data to Kafka topics.
-  - Kafka Consumers: Applications consuming data from Kafka topics for further processing.
-
-- **Workflow**:
-  - Producers publish data to Kafka topics.
-  - Kafka brokers store data and replicate it across the cluster.
-  - Consumers read data from Kafka topics and initiate data processing pipelines.
+I recommend utilizing **Apache Kafka** as the central messaging system for ingesting ad impressions (JSON), clicks/conversions (CSV, converted to JSON), and bid requests (Avro) data. Kafka's distributed architecture and scalability make it well-suited for handling high data volumes generated in real-time and batch modes.
 
 **Data Processing Solution**
 
-To develop data transformation processes, I recommend utilizing **Apache Beam** (Python) to standardize and enrich the data. Beam provides a unified programming model for both batch and streaming data processing.
+For data transformation processes, I propose using **Apache Beam** (Python). Beam provides a unified programming model for both batch and streaming data processing, allowing for efficient data validation, filtering, enrichment, deduplication, and correlation of ad impressions with clicks and conversions.
 
 **Data Storage and Query Performance Solution**
 
-To store processed data efficiently and enable fast querying for campaign performance analysis, I propose using **Apache HBase** as the data storage solution. HBase provides a scalable, distributed, and fault-tolerant NoSQL database.
+To store processed data efficiently and enable fast querying for campaign performance analysis, I suggest using **Apache HBase**, a scalable and fault-tolerant NoSQL database. HBase's column-oriented data model and ability to handle high write and read throughput make it suitable for optimizing analytical queries and aggregations.
 
 **Error Handling and Monitoring Solution**
 
-To create an error handling and monitoring system, I recommend utilizing **Apache Airflow** as the workflow management system. Airflow provides a centralized platform for managing and monitoring data processing workflows.
+For error handling and monitoring, I recommend utilizing **Apache Airflow** as the workflow management system. Airflow provides a centralized platform for orchestrating data processing workflows, monitoring execution, and triggering alerts to notify data engineers of errors, anomalies, or delays, enabling prompt resolution to maintain ad campaign effectiveness.
 
 **High-Level Design (HLD)**
 
-1. **Data Processing:**
-   - **Components**:
-     - Apache Beam: Unified data processing framework for implementing batch and streaming pipelines.
-   - **Workflow**:
-     - Beam pipelines read data from Kafka topics.
-     - Data transformation logic is applied using Beam's transformations (e.g., data validation, filtering, enrichment).
-     - Correlation of ad impressions with clicks and conversions is performed using Beam's capabilities.
+1. **Data Ingestion:**
+   - **Components:** Apache Kafka, Kafka Producers, Kafka Consumers
+   - **Workflow:** Producers publish data to Kafka topics, Kafka brokers store and replicate data, Consumers read data from Kafka topics and initiate data processing pipelines.
 
-2. **Data Storage and Query Performance:**
-   - **Components**:
-     - Apache HBase: Distributed, scalable, and fault-tolerant NoSQL database for storing processed data efficiently.
-   - **Workflow**:
-     - Processed data is written to HBase tables designed for high-performance querying and aggregations.
-     - Data partitioning is implemented to optimize query performance.
-     - Data retention policies are enforced to manage storage costs and compliance requirements.
+2. **Data Processing:**
+   - **Components:** Apache Beam
+   - **Workflow:** Beam pipelines read data from Kafka topics, implement data quality checks and validation, apply data transformation logic, and correlate ad impressions with clicks and conversions.
 
-3. **Error Handling and Monitoring:**
-   - **Components**:
-     - Apache Airflow: Workflow management platform for orchestrating data processing workflows and error handling.
-     - Monitoring Tools (e.g., Prometheus, Grafana): For monitoring system metrics and visualizing performance.
-   - **Workflow**:
-     - Airflow DAGs define data processing workflows, including ingestion, processing, and storage.
-     - Sensors within Airflow monitor workflow execution and detect errors or anomalies.
-     - Alerts are triggered to notify data engineers of issues, enabling prompt resolution.
+3. **Data Storage and Query Performance:**
+   - **Components:** Apache HBase
+   - **Workflow:** Processed data is written to HBase tables designed for high-performance querying and aggregations, data partitioning and indexing strategies are implemented, data retention policies are enforced.
 
-4. **Security:**
-   - **Components**:
-     - Encryption Mechanisms: Encrypting data at rest and in transit to ensure confidentiality.
-     - Authentication and Authorization: Implementing mechanisms to control access to data and resources.
-   - **Workflow**:
-     - Encryption mechanisms are applied to protect sensitive data.
-     - Authentication and authorization mechanisms are enforced to prevent unauthorized access.
+4. **Error Handling and Monitoring:**
+   - **Components:** Apache Airflow, Prometheus, Grafana, Centralized Logging Solution (e.g., ELK Stack)
+   - **Workflow:** Airflow DAGs define data processing workflows, sensors monitor execution and detect errors/anomalies, alerts are triggered, monitoring and logging capabilities are enhanced.
 
-5. **Documentation and Collaboration:**
-   - **Components**:
-     - Comprehensive Documentation: Including architecture diagrams, data flow diagrams, configuration settings, and deployment instructions.
-   - **Workflow**:
-     - Documentation facilitates collaboration, troubleshooting, and knowledge transfer within the team.
-     - Regular updates and reviews ensure documentation remains up-to-date and accurate.
+5. **Security:**
+   - **Components:** Encryption Mechanisms, Authentication and Authorization
+   - **Workflow:** Data encryption at rest and in transit is implemented, access control mechanisms are enforced.
 
-**Improvements and Additional Considerations:**
+6. **Schema Management:**
+   - **Components:** Schema Management System (e.g., Apache Avro, Apache Parquet)
+   - **Workflow:** Schema compatibility is enforced, and schema evolution is handled gracefully.
 
-- **Data Serialization**: Convert CSV data into JSON format before ingestion into Kafka to maintain consistency.
-- **Schema Management**: Employ a schema management system to enforce schema compatibility and evolution.
-- **Real-time Processing**: Incorporate real-time processing capabilities using Apache Flink or Apache Storm.
-- **Data Partitioning**: Partition data in Kafka and HBase to optimize query performance.
-- **Data Retention Policies**: Define data retention policies for managing storage costs and compliance requirements.
-- **Monitoring and Logging**: Enhance monitoring and logging capabilities using tools like Prometheus and Grafana.
-- **Failure Recovery**: Implement retry mechanisms, checkpointing, and automatic recovery procedures to handle failures gracefully.
-- **Documentation and Collaboration**: Document the solution comprehensively to facilitate collaboration, troubleshooting, and knowledge transfer.
+**Low-Level Design (LLD)**
 
-By integrating these improvements and additional considerations into the final proposed solution, we ensure scalability, reliability, security, and maintainability of the data engineering solution for AdvertiseX.
+1. **Data Ingestion:**
+   - **Kafka Producers:** Implement producers for each data source (JSON, CSV, Avro) using Kafka's producer API.
+   - **Kafka Topics:** Create separate topics for ad impressions, clicks/conversions, and bid requests.
+   - **Kafka Consumers:** Implement consumers to read data from Kafka topics and pass it to data processing pipelines.
+
+2. **Data Processing:**
+   - **Data Quality and Validation:** Define data quality rules and validation checks (e.g., null/missing values, data format, range checks) within Beam pipelines.
+   - **Data Transformation:** Implement Beam transformations (e.g., `Map`, `Filter`, `Combine`) for data filtering, enrichment, deduplication, and correlation.
+   - **Data Correlation:** Use Beam's `Combine` transformation to join ad impressions with clicks and conversions based on common keys (e.g., user ID, ad campaign ID).
+
+3. **Data Storage and Query Performance:**
+   - **HBase Table Design:** Define HBase table schemas and column families optimized for querying and aggregations.
+   - **Data Partitioning:** Partition data in HBase based on appropriate keys (e.g., campaign ID, timestamp) to improve query performance.
+   - **Indexing:** Implement indexing strategies in HBase for frequently queried columns or column families.
+   - **Data Retention:** Define data retention policies and implement mechanisms for data expiration or archiving.
+
+4. **Error Handling and Monitoring:**
+   - **Airflow DAGs:** Define Airflow DAGs representing the data processing workflows, including tasks for data ingestion, processing, and storage.
+   - **Airflow Sensors:** Implement Airflow sensors to monitor data quality, data availability, and pipeline execution.
+   - **Alerting:** Configure Airflow to trigger alerts (e.g., email, Slack) for specific error conditions or anomalies.
+   - **Monitoring and Logging:** Integrate Prometheus for metric collection, Grafana for visualization, and a centralized logging solution (e.g., ELK Stack) for log aggregation and analysis.
+
+5. **Security:**
+   - **Data Encryption:** Implement encryption mechanisms (e.g., TLS, Kafka encryption, HBase encryption) for data at rest and in transit.
+   - **Authentication and Authorization:** Configure authentication (e.g., Kerberos, SASL) and authorization mechanisms (e.g., ACLs, RBAC) for data access control.
+
+6. **Schema Management:**
+   - **Schema Registry:** Set up a schema registry (e.g., Apache Avro, Apache Parquet) to store and manage data schemas.
+   - **Schema Evolution:** Define processes for schema evolution, compatibility checks, and schema validation.
+
+This HLD and LLD cover the key components, workflows, and low-level implementation details for each aspect of the data engineering solution, including data ingestion, processing, storage, error handling, monitoring, security, and schema management.
